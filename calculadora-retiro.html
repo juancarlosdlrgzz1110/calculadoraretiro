@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>¿Cuánto necesitas para retirarte tranquilo?</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e0e0f;
+    --surface: #161618;
+    --surface2: #1e1e21;
+    --border: rgba(255,255,255,0.07);
+    --text: #f0ede8;
+    --muted: #8a8782;
+    --accent: #c9a96e;
+    --accent2: #e8c98a;
+    --danger: #e07070;
+    --good: #7ab89a;
+    --radius: 16px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px 60px;
+    position: relative;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    top: -200px; left: 50%;
+    transform: translateX(-50%);
+    width: 700px; height: 500px;
+    background: radial-gradient(ellipse, rgba(201,169,110,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .wrapper { width: 100%; max-width: 680px; }
+
+  /* Header */
+  .header { text-align: center; margin-bottom: 48px; }
+  .eyebrow {
+    font-size: 11px; letter-spacing: .18em; text-transform: uppercase;
+    color: var(--accent); font-weight: 500; margin-bottom: 16px;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+  }
+  .eyebrow::before, .eyebrow::after {
+    content: ''; display: block; width: 32px; height: 1px; background: var(--accent); opacity: .5;
+  }
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(28px, 5vw, 42px);
+    line-height: 1.15;
+    font-weight: 700;
+    margin-bottom: 14px;
+    color: var(--text);
+  }
+  h1 em { font-style: italic; color: var(--accent2); }
+  .subtitle { font-size: 15px; color: var(--muted); line-height: 1.6; max-width: 480px; margin: 0 auto; }
+
+  /* Cards */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px 32px;
+    margin-bottom: 16px;
+  }
+  .card-title {
+    font-size: 11px; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--accent); font-weight: 500; margin-bottom: 20px;
+  }
+
+  /* Slider inputs */
+  .field { margin-bottom: 24px; }
+  .field:last-child { margin-bottom: 0; }
+  .field-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+  .field-label { font-size: 14px; color: var(--text); font-weight: 400; }
+  .field-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px; color: var(--accent2); font-weight: 700;
+  }
+  input[type=range] {
+    -webkit-appearance: none;
+    width: 100%; height: 4px;
+    background: var(--surface2);
+    border-radius: 2px; outline: none; cursor: pointer;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 3px solid var(--bg);
+    box-shadow: 0 0 0 1px var(--accent);
+    transition: transform .15s;
+  }
+  input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+
+  /* Results panel */
+  .results {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+  .results-header {
+    background: var(--surface2);
+    padding: 20px 32px;
+    border-bottom: 1px solid var(--border);
+  }
+  .results-header p { font-size: 13px; color: var(--muted); }
+  .results-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+  .result-item {
+    padding: 24px 32px;
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .result-item:nth-child(even) { border-right: none; }
+  .result-item:nth-last-child(-n+2) { border-bottom: none; }
+  .result-label { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .result-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px; font-weight: 700; line-height: 1;
+    transition: color .4s;
+  }
+  .result-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+  /* Gap meter */
+  .gap-section { padding: 24px 32px; border-top: 1px solid var(--border); }
+  .gap-label-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 13px; }
+  .gap-bar-bg { background: var(--surface2); height: 8px; border-radius: 4px; overflow: hidden; }
+  .gap-bar-fill { height: 100%; border-radius: 4px; transition: width .6s cubic-bezier(.4,0,.2,1), background .4s; }
+  .gap-message { margin-top: 16px; font-size: 14px; line-height: 1.6; padding: 14px 18px; border-radius: 10px; border: 1px solid; transition: all .4s; }
+
+  /* Monthly contribution */
+  .contribution-card {
+    background: linear-gradient(135deg, rgba(201,169,110,0.12), rgba(201,169,110,0.04));
+    border: 1px solid rgba(201,169,110,0.25);
+    border-radius: var(--radius);
+    padding: 28px 32px;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+  .contribution-label { font-size: 13px; color: var(--muted); margin-bottom: 8px; }
+  .contribution-amount {
+    font-family: 'Playfair Display', serif;
+    font-size: 48px; font-weight: 700;
+    color: var(--accent2);
+    line-height: 1;
+    margin-bottom: 6px;
+    transition: all .4s;
+  }
+  .contribution-sub { font-size: 13px; color: var(--muted); }
+
+  /* CTA */
+  .cta-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px;
+    text-align: center;
+  }
+  .cta-card h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px; margin-bottom: 10px;
+  }
+  .cta-card p { font-size: 14px; color: var(--muted); line-height: 1.6; margin-bottom: 24px; }
+  .cta-btn {
+    display: inline-block;
+    background: var(--accent);
+    color: #1a1200;
+    font-size: 14px; font-weight: 500;
+    padding: 14px 32px;
+    border-radius: 999px;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    transition: background .2s, transform .15s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .cta-btn:hover { background: var(--accent2); transform: translateY(-1px); }
+  .cta-note { font-size: 12px; color: var(--muted); margin-top: 12px; }
+
+  /* Footer */
+  .footer { margin-top: 32px; text-align: center; font-size: 12px; color: var(--muted); line-height: 1.7; }
+  .footer strong { color: var(--accent); }
+
+  @media (max-width: 480px) {
+    .card, .results-header, .result-item, .gap-section { padding-left: 20px; padding-right: 20px; }
+    .results-grid { grid-template-columns: 1fr; }
+    .result-item { border-right: none; }
+    .result-item:nth-last-child(-n+2) { border-bottom: 1px solid var(--border); }
+    .result-item:last-child { border-bottom: none; }
+    .contribution-amount { font-size: 38px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <div class="header">
+    <div class="eyebrow">Herramienta de planeación</div>
+    <h1>¿Cuánto necesitas para<br><em>retirarte tranquilo?</em></h1>
+    <p class="subtitle">Mueve los controles y descubre en segundos si vas por el camino correcto — o cuánto te falta.</p>
+  </div>
+
+  <!-- Inputs -->
+  <div class="card">
+    <div class="card-title">Tu situación hoy</div>
+
+    <div class="field">
+      <div class="field-header">
+        <span class="field-label">¿Cuántos años tienes?</span>
+        <span class="field-value" id="val-age">35 años</span>
+      </div>
+      <input type="range" id="age" min="25" max="60" value="35" oninput="update()">
+    </div>
+
+    <div class="field">
+      <div class="field-header">
+        <span class="field-label">Ingreso mensual actual</span>
+        <span class="field-value" id="val-income">$25,000</span>
+      </div>
+      <input type="range" id="income" min="10000" max="150000" step="5000" value="25000" oninput="update()">
+    </div>
+
+    <div class="field">
+      <div class="field-header">
+        <span class="field-label">¿Cuánto ahorras actualmente al mes?</span>
+        <span class="field-value" id="val-current">$0</span>
+      </div>
+      <input type="range" id="current" min="0" max="20000" step="500" value="0" oninput="update()">
+    </div>
+
+    <div class="field">
+      <div class="field-header">
+        <span class="field-label">¿A qué edad quieres retirarte?</span>
+        <span class="field-value" id="val-retire">65 años</span>
+      </div>
+      <input type="range" id="retire" min="55" max="70" value="65" oninput="update()">
+    </div>
+
+    <div class="field">
+      <div class="field-header">
+        <span class="field-label">% de tu ingreso que quieres mantener</span>
+        <span class="field-value" id="val-pct">80%</span>
+      </div>
+      <input type="range" id="pct" min="50" max="100" step="5" value="80" oninput="update()">
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div class="results">
+    <div class="results-header">
+      <div class="card-title" style="margin-bottom:4px">Tu panorama al retiro</div>
+      <p>Estimado con una inflación del 4% anual y rendimiento del 7% en tu plan</p>
+    </div>
+    <div class="results-grid">
+      <div class="result-item">
+        <div class="result-label">Años para retirarte</div>
+        <div class="result-number" id="res-years" style="color:var(--accent2)">—</div>
+        <div class="result-sub" id="res-retire-age"></div>
+      </div>
+      <div class="result-item">
+        <div class="result-label">Ingreso mensual deseado</div>
+        <div class="result-number" id="res-monthly" style="color:var(--text)">—</div>
+        <div class="result-sub">al momento del retiro</div>
+      </div>
+      <div class="result-item">
+        <div class="result-label">Capital necesario</div>
+        <div class="result-number" id="res-needed" style="color:var(--text)">—</div>
+        <div class="result-sub">fondo total requerido</div>
+      </div>
+      <div class="result-item">
+        <div class="result-label">Lo que acumularás solo</div>
+        <div class="result-number" id="res-have" style="color:var(--text)">—</div>
+        <div class="result-sub">con tu ahorro actual</div>
+      </div>
+    </div>
+
+    <div class="gap-section">
+      <div class="gap-label-row">
+        <span style="color:var(--muted); font-size:13px">Lo que tendrás vs. lo que necesitas</span>
+        <span id="gap-pct-label" style="font-size:13px; font-weight:500">—</span>
+      </div>
+      <div class="gap-bar-bg">
+        <div class="gap-bar-fill" id="gap-bar" style="width:0%; background:var(--good)"></div>
+      </div>
+      <div class="gap-message" id="gap-message"></div>
+    </div>
+  </div>
+
+  <!-- Monthly needed -->
+  <div class="contribution-card">
+    <div class="contribution-label">Lo que necesitarías ahorrar al mes hoy</div>
+    <div class="contribution-amount" id="monthly-needed">—</div>
+    <div class="contribution-sub">para cerrar la brecha y llegar a tu meta de retiro</div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-card">
+    <h2>¿Quieres saber cómo lograrlo?</h2>
+    <p>En una llamada de 20 minutos te muestro cómo personas con tu mismo ingreso están construyendo su retiro hoy — sin afectar su estilo de vida.</p>
+    <button class="cta-btn" onclick="alert('Aquí va tu link de agenda — Calendly, WhatsApp o correo')">Agendar mi revisión gratuita</button>
+    <div class="cta-note">Sin costo · Sin compromiso · Solo claridad sobre tu futuro</div>
+  </div>
+
+  <div class="footer">
+    <p>Esta calculadora es una estimación orientativa con fines informativos.<br>
+    Los resultados reales dependen de productos, tasas y condiciones específicas.<br>
+    <strong>Consulta con un asesor para un plan personalizado.</strong></p>
+  </div>
+
+</div>
+
+<script>
+function fmt(n) {
+  if (n >= 1000000) return '$' + (n/1000000).toFixed(1) + 'M';
+  if (n >= 1000) return '$' + Math.round(n/1000) + 'k';
+  return '$' + Math.round(n).toLocaleString('es-MX');
+}
+function fmtFull(n) {
+  return '$' + Math.round(n).toLocaleString('es-MX');
+}
+
+function update() {
+  const age     = +document.getElementById('age').value;
+  const income  = +document.getElementById('income').value;
+  const current = +document.getElementById('current').value;
+  const retire  = +document.getElementById('retire').value;
+  const pct     = +document.getElementById('pct').value / 100;
+
+  document.getElementById('val-age').textContent    = age + ' años';
+  document.getElementById('val-income').textContent = fmtFull(income);
+  document.getElementById('val-current').textContent= fmtFull(current);
+  document.getElementById('val-retire').textContent = retire + ' años';
+  document.getElementById('val-pct').textContent    = (pct*100) + '%';
+
+  const years     = Math.max(retire - age, 1);
+  const inflation = 0.04;
+  const growth    = 0.07;
+  const lifespan  = 25; // años en retiro
+
+  // Ingreso mensual deseado ajustado por inflación al momento del retiro
+  const desiredMonthly = income * pct * Math.pow(1 + inflation, years);
+  // Capital necesario (renta vitalicia simplificada — PV de 25 años de pagos)
+  const r = (growth - inflation) / 12;
+  const n = lifespan * 12;
+  const capitalNeeded = desiredMonthly * (1 - Math.pow(1+r, -n)) / r;
+
+  // Lo que acumulará solo con ahorro actual
+  const monthlyRate = growth / 12;
+  const months = years * 12;
+  const accumulated = current * (Math.pow(1 + monthlyRate, months) - 1) / monthlyRate;
+
+  const gap = capitalNeeded - accumulated;
+  const coverPct = Math.min((accumulated / capitalNeeded) * 100, 100);
+
+  // Mensualidad necesaria para cerrar la brecha
+  let monthlyNeeded = 0;
+  if (gap > 0) {
+    monthlyNeeded = gap * monthlyRate / (Math.pow(1 + monthlyRate, months) - 1);
+  }
+
+  // Update display
+  document.getElementById('res-years').textContent = years;
+  document.getElementById('res-retire-age').textContent = 'a los ' + retire + ' años';
+  document.getElementById('res-monthly').textContent = fmt(desiredMonthly);
+  document.getElementById('res-needed').textContent = fmt(capitalNeeded);
+  document.getElementById('res-have').textContent = fmt(accumulated);
+
+  // Gap bar
+  const bar = document.getElementById('gap-bar');
+  bar.style.width = coverPct.toFixed(1) + '%';
+
+  let barColor, msgBg, msgBorder, msgText, msgIcon;
+  if (coverPct >= 90) {
+    barColor = 'var(--good)'; msgBg = 'rgba(122,184,154,0.08)'; msgBorder = 'rgba(122,184,154,0.3)';
+    msgIcon = '✦'; msgText = `Estás en buen camino. Con tu ahorro actual cubrirías el <strong>${coverPct.toFixed(0)}%</strong> de lo que necesitas. Un pequeño ajuste podría asegurar el 100%.`;
+  } else if (coverPct >= 50) {
+    barColor = 'var(--accent)'; msgBg = 'rgba(201,169,110,0.08)'; msgBorder = 'rgba(201,169,110,0.3)';
+    msgIcon = '◆'; msgText = `Cubrirías el <strong>${coverPct.toFixed(0)}%</strong> de tu meta. Hay una brecha importante, pero con un plan adecuado hoy aún tienes tiempo de cerrarla.`;
+  } else {
+    barColor = 'var(--danger)'; msgBg = 'rgba(224,112,112,0.08)'; msgBorder = 'rgba(224,112,112,0.3)';
+    msgIcon = '▲'; msgText = `Con tu ritmo actual solo cubrirías el <strong>${coverPct.toFixed(0)}%</strong> de lo que necesitas. Cada año que esperas hace la brecha más difícil de cerrar.`;
+  }
+
+  bar.style.background = barColor;
+  document.getElementById('gap-pct-label').textContent = coverPct.toFixed(0) + '% cubierto';
+  document.getElementById('gap-pct-label').style.color = barColor;
+
+  const msg = document.getElementById('gap-message');
+  msg.style.background = msgBg;
+  msg.style.borderColor = msgBorder;
+  msg.style.color = 'var(--text)';
+  msg.innerHTML = msgIcon + ' ' + msgText;
+
+  // Monthly needed
+  const mn = document.getElementById('monthly-needed');
+  if (gap <= 0) {
+    mn.textContent = '¡Ya lo tienes!';
+    mn.style.color = 'var(--good)';
+  } else {
+    mn.textContent = fmtFull(Math.round(monthlyNeeded));
+    mn.style.color = monthlyNeeded > income * 0.4 ? 'var(--danger)' : 'var(--accent2)';
+  }
+}
+
+update();
+</script>
+</body>
+</html>
